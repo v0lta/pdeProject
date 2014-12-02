@@ -44,13 +44,13 @@ end
 
 
 %plot solution
-subplot(2,1,1)
+subplot(1,2,1)
 mesh(x,t,U)
 xlabel('x')
 ylabel('time')
 zlabel('function value')
 %Plot the error
-subplot(2,1,2)
+subplot(1,2,2)
 mesh(x,t,error)
 xlabel('x')
 ylabel('time')

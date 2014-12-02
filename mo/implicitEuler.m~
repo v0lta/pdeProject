@@ -40,7 +40,8 @@ for n = 1:1:(length(t)-1)
     %Exact solution:
     exSol(n,:) = exp(-pi^2*t(n))*sin(pi*x);
     %Error:
-    error(n,:) = abs(U(n,:) -exSol(n,:)); 
+    error(n,:) = abs(U(n,:) -exSol(n,:));
+        
 end
 
 %plot solution

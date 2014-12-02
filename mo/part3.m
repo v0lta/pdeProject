@@ -1,5 +1,3 @@
-
-
 %Solve the third question:
 h = [1/10 1/20 1/40 1/80];
 k = [1/20, 1/40, 1/80, 1/160, 1/320];
@@ -8,8 +6,6 @@ xEnd = 1;
 leftBound = 0;
 rightBound = 0;
 theta = 0.5;
-
-
 
 for a = 1:1:length(h)
     for b = 1:1:length(k)
@@ -20,17 +16,16 @@ for a = 1:1:length(h)
         xBound = sin(pi*x);
         errorTmp = thetaMethod( dT,dX,tEnd,xEnd,leftBound,...
                                  rightBound,xBound,theta);
-        errorMat(a,b) = norm(errorTmp(end-1,:));
+        errorMatCN(a,b) = norm(errorTmp(end-1,:))/length(x);
         
     end
 end
 figure(1);
-bar3(errorMat);
+bar3(errorMatCN);
 xlabel('grid')% = [1/20, 1/40, 1/80, 1/160, 1/320]');
 ylabel('time')% = [1/10 1/20 1/40 1/80]');
 zlabel('error')
 title('Crank-Nicolson')
-
 
 theta = 1;
 for a = 1:1:length(h)
@@ -42,12 +37,12 @@ for a = 1:1:length(h)
         xBound = sin(pi*x);
         errorTmp = thetaMethod( dT,dX,tEnd,xEnd,leftBound,...
                                  rightBound,xBound,theta);
-        errorMat(a,b) = norm(errorTmp(end-1,:));
+        errorMatIE(a,b) = norm(errorTmp(end-1,:))/length(x);
         
     end
 end
 figure(2);
-bar3(errorMat);
+bar3(errorMatIE);
 xlabel('grid') %= [1/20, 1/40, 1/80, 1/160, 1/320]');
 ylabel('time') %= [1/10 1/20 1/40 1/80]');
 zlabel('error')
@@ -66,5 +61,5 @@ bar3(muMat);
 xlabel('grid')% = [1/20, 1/40, 1/80, 1/160, 1/320]');
 ylabel('time')% = [1/10 1/20 1/40 1/80]');
 zlabel('magnitude')
-title('\mu- Magnitude Plot');
+title('\mu Magnitude Plot');
 

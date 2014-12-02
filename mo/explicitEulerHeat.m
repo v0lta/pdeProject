@@ -3,13 +3,13 @@
 
 %Create a grid with t e [0.05, 0.5]. x e [0.1]
 %Stability with mu < 0.5. mu = (delta t)/(delta x)^2
-mu = 0.3;
+mu = 0.55;
 dX = 1/20;
 dT = mu * dX^2;
 %First requested plot
-t = 0:dT:0.5;
+%t = 0:dT:0.5;
 %second requested plot.
-%t = 0:deltaT:0.05;
+t = 0:dT:0.05;
 
 x = 0:dX:1;
 
