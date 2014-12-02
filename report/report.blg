@@ -1,0 +1,54 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: report.aux
+The style file: babplain.bst
+A level-1 auxiliary file: FrontBackmatter/Titlepage.aux
+A level-1 auxiliary file: FrontBackmatter/Contents.aux
+A level-1 auxiliary file: FrontBackmatter/Code.aux
+A level-1 auxiliary file: FrontBackmatter/Bibliography.aux
+Database file #1: Bibliography.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty language in iserles_first_2009
+Warning--empty year in iserles_first_2009
+You've used 1 entry,
+            2788 wiz_defined-function locations,
+            642 strings with 6168 characters,
+and the built_in function-call counts, 330 in all, are:
+= -- 24
+> -- 7
+< -- 0
++ -- 4
+- -- 2
+* -- 30
+:= -- 51
+add.period$ -- 2
+call.type$ -- 1
+change.case$ -- 4
+chr.to.int$ -- 0
+cite$ -- 3
+duplicate$ -- 17
+empty$ -- 32
+format.name$ -- 3
+if$ -- 61
+int.to.chr$ -- 0
+int.to.str$ -- 1
+missing$ -- 2
+newline$ -- 20
+num.names$ -- 2
+pop$ -- 10
+preamble$ -- 1
+purify$ -- 3
+quote$ -- 0
+skip$ -- 6
+stack$ -- 0
+substring$ -- 6
+swap$ -- 5
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 2
+warning$ -- 2
+while$ -- 2
+width$ -- 2
+write$ -- 25
+(There were 2 warnings)

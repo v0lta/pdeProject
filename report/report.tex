@@ -1,0 +1,160 @@
+\documentclass[ twoside,openright,titlepage,numbers=noenddot,headinclude,%1headlines,% letterpaper a4paper
+                footinclude=true,cleardoublepage=empty,abstractoff, % <--- obsolete, remove (todo)
+                BCOR=5mm,paper=a4,fontsize=11pt,%11pt,a4paper,%
+                ngerman,american,%
+                ]{scrreprt}
+
+
+%load fonts und useful packages. etc.
+\input{config}
+\begin{document}
+\frenchspacing
+\raggedbottom
+\selectlanguage{american} % american ngerman
+%\renewcommand*{\bibname}{new name}
+%\setbibpreamble{}
+\pagenumbering{roman}
+\pagestyle{plain}
+%create titelpage
+\include{FrontBackmatter/Titlepage}
+%\include{FrontBackmatter/Contents}
+\pagestyle{scrheadings}
+
+
+\pagenumbering{arabic}
+
+\chapter{Heat Equation}
+In the first part of this report we are going to solve the heat equation:
+\begin{equation}
+\frac{\partial \phi}{\partial t} = \frac{\partial^2 \phi}{\partial x^2} 
+\end{equation} 
+With the boundary conditions: 
+\begin{equation*}
+\phi(0,t) = 0, \; \phi(1,t) = 1, \; \phi(x,0) = sin(5\pi x /2).
+\end{equation*}
+Using four different numerical solution schemes:
+
+
+
+
+\section{Explicit Euler}
+The explicit Euler method is defined as:
+\begin{equation}
+U_j^{n+1} = U_j^n + \mu (U_{j+1}^n - 2U_j^n + U_{j-1}^n ) \;\; \text{with} \; \mu =\frac{\triangle t}{(\triangle x)^2}.
+\end{equation}
+From this equation we can derive code that solves the heat equation:
+\lstinputlisting[language=matlab,caption={explicit Euler},label=lst:expEuler,captionpos=b]{code/expEuler.tex}
+\begin{figure}
+\includegraphics[scale = 0.45]{images/EulerHeat05.png}
+\includegraphics[scale = 0.45]{images/EulerHeat005.png}
+\caption{Solution of the heat equation with the explicid Euler method. Until time $t = 0.5$ (left) and until $t = 0.05$ (right). The boundary conditions are: $0$, $1$, $sin(5\pi x/2)$.}
+\label{fig:heatEulerStable}
+\end{figure}
+Running this code leads to the images in figure~\ref{fig:heatEulerStable}. The computations are done using a mesh ratio $\mu = 0.3$ and $\triangle x = \frac{1}{20}$. Therefore we have time steps of size $\triangle t = 0.00075 = 7.5 * 10^{-4}$. This scheme is stable for mesh ratios $\mu \leq 0.5$. Therefore if we increase the time step to $\approx 0.0013$ we are expecting to see instability. 
+\begin{figure}
+\includegraphics[scale = 0.6]{images/muUnstable.png}
+\caption{Instabilities forming with $\mu = 0.55$ at time $t = 0.05$.}
+\label{fig:heatEulerUnstable}
+\end{figure}
+A plot of forming instabilities is given in figure~\ref{fig:heatEulerUnstable}
+
+\section{A slight variation of the problem}
+Next we are going to consider a small variation of the problem. In fact the boundary conditions are going to change to:
+\begin{equation*}
+\phi(0,t) = 0, \; \phi(1,t) = 0, \; \phi(x,0) = sin(\pi x).
+\end{equation*} 
+For this set of boundary conditions we know the exact solution:
+\begin{equation}
+\pi(x,t) = exp(-\pi^2 t)sin(\pi x).
+\end{equation}
+Knowledge of the exact solution enables us to check the code we provided earlier. We are now able to compute the error in every grid point.
+\begin{figure}
+\includegraphics[scale = 0.45]{images/explicitEulerError.png}
+\caption{Numerical solution of the heat equation with the second boundary value set (left). Absolute value of the numerical solution (right).}
+\label{fig:errorExpEuler}
+\end{figure}
+ The solution should not deviate too much from the exact solution.\marginpar{TODO: more math here...} A plot of the numerical solution and it's error is given in figure~\ref{fig:errorExpEuler}. As the biggest error in any grid point is equal to $0.0011$ we conclude our implementation is probably correct.
+  
+\section{Euler, Crank-Nicolson and the $\theta$-method}
+In this section we are going to use the more general theta-method-scheme to compare the errors of the explicit-Euler, implicit-Euler and Crank-Nicolson methods. $\Theta$-type methods are defined as \marginpar{$\partial_x^2$ denotes double application of a central difference}:
+\begin{equation}
+U_j^{n+1} - U_j^n = \mu [\theta \partial_x^2 U_j^{n+1} + (1-\theta) \partial_x^2 U_j^n].
+\label{eq:theta}
+\end{equation}
+With $\theta = 0$ this we have the explicit Euler method, $\theta = 1$ leads to the implicit Euler method and finally $\theta = 0.5$ leads to the Crank-Nicolson method. In order do be able to implement a function in matlab that takes care of finding the error for each of these methods we have to derive two essential matrices. This is done by expanding the central differences from equation~\ref{eq:theta} and rearranging:
+\begin{equation*}
+-\mu \theta U_{j-1}^{n+1} + U_j^{n+1} ( 1 + 2\mu \theta) - \mu \theta U_{j+1}^{n+1}
+\end{equation*}
+\begin{equation}
+= \mu (1 - \theta) U_{j-1}^n + (1 - 2\mu(1-\theta) U_j^n + \mu (1 - \theta) U_{j+1}^n.
+\end{equation}
+Here we are looking at an equation of the form $A \mathbf{U^{n+1}} = B \mathbf{U^{n}}$. Therefor the matrices $A$ and $B$ must be:
+\begin{equation*}
+A = \begin{pmatrix} 
+(1 + 2\mu\theta) & -\mu\theta 	&		&		\\
+-\mu\theta    & (1 + 2\mu\theta)& -\mu\theta	&		\\
+	      &	 -\mu\theta	& (1+2\mu\theta)& -\mu\theta	\\
+	      & \;\;\ddots	& \;\;\ddots	& \;\;\ddots	\\
+		
+\end{pmatrix}
+\end{equation*}
+\begin{equation}
+B = \begin{pmatrix} 
+1 - 2\mu(1-\theta) & \mu(1-\theta) 	&		&		\\
+\mu(1-\theta)  	   & 1 - 2\mu(1-\theta)& \mu(1-\theta)&		\\
+	      	    &	 \mu(1-\theta)	& 1 - 2\mu(1-\theta)& \mu(1-\theta)\\
+	      	    & \ddots		& \ddots	& \ddots	\\
+		
+\end{pmatrix}.
+\end{equation}
+Now we are able to write the following function, which when executed with different thetas $\theta$ and grid parameters $\triangle x, \triangle t$ will allow us to learn more about the error. 
+\lstinputlisting[language=matlab,caption={generic theta Method},label=lst:theta,captionpos=b]{code/theta.tex}
+In the following section we will describe and interpret the results we obtained.
+
+\subsection{Results}
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|c|} \hline
+			  & $\triangle x$ =1/20&$\triangle x$ =1/40&$\triangle x$ =1/80&$\triangle x$ =1/160&$\triangle x$ =1/320 \\ \hline 
+$\triangle t$ =1/10	  & 0.8919 &   0.6577 &   0.4729 &   0.3368 &   0.2390	\\ 
+$\triangle t$ =1/20	  & 0.1427 &   0.1119 &   0.0817 &   0.0584 &   0.0415	\\
+$\triangle t$ =1/40	  & 0.0196 &   0.0214 &   0.0166 &   0.0121 &   0.0086	\\
+$\triangle t$ =1/80 	  & 0.0047 &   0.0032 &   0.0035 &   0.0027 &   0.0019	\\ \hline
+\end{tabular}
+\caption{Error values of the Crank-Nicolson-scheme for different grid values. \textbf{Every entry has to be multiplied by 1.0e-03}.}
+\label{tab:CN}
+\end{table}
+\begin{table}
+\begin{tabular}{|c|c|c|c|c|c|} \hline
+	& $\triangle x$ =1/20&$\triangle x$ =1/40&$\triangle x$ =1/80&$\triangle x$ =1/160&$\triangle x$ =1/320 \\
+$\triangle t$ =1/10	& 0.0068  &  0.0049  &  0.0035  &  0.0025  &  0.0018 \\
+$\triangle t$ =1/20	& 0.0023  &  0.0017  &  0.0012  &  0.0008  &  0.0006 \\
+$\triangle t$ =1/40	& 0.0009  &  0.0007  &  0.0005  &  0.0003  &  0.0002 \\
+$\triangle t$ =1/80	& 0.0004  &  0.0003  &  0.0002  &  0.0001  &  0.0001 \\ \hline
+\end{tabular}
+\caption{Error of the implicit Euler-scheme for different grid values.}
+\label{tab:IE}
+\end{table}
+Table~\ref{tab:CN} and ~\ref{tab:IE} show the results we obtained by running the code in listing~\ref{lst:theta} with different input values. Figure~\ref{fig:bar} shows a graphical representation of the results. The smaller the steps we take the smaller is the error we observe.     
+      
+
+\begin{figure}
+\includegraphics[scale = 0.45]{images/q2CN.png}
+\includegraphics[scale = 0.45]{images/q2IE.png}
+\caption{Bar plots of the results shown in table~\ref{tab:CN} (left) and~\ref{tab:IE} (right).}
+\label{fig:bar}
+\end{figure}
+
+\chapter{Heat Equation with convection}
+In this part a convection term in introduced into the equation. We are now solving a different problem of the form:
+\begin{equation}
+\frac{\partial \phi}{\partial t} = 50\frac{\partial \phi}{\partial x} + \frac{\partial^2 \phi}{\partial x^2}
+\end{equation}
+
+\begin{figure}
+\includegraphics[scale = 0.45]{images/centralDifference.png}
+\includegraphics[scale = 0.45]{images/backwardDifference.png}
+\includegraphics[scale = 0.45]{images/forwardDifference.png}
+\end{figure}
+
+
+\end{document}
