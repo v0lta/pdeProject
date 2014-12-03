@@ -134,27 +134,70 @@ $\triangle t$ =1/80	& 0.0004  &  0.0003  &  0.0002  &  0.0001  &  0.0001 \\ \hli
 \caption{Error of the implicit Euler-scheme for different grid values.}
 \label{tab:IE}
 \end{table}
-Table~\ref{tab:CN} and ~\ref{tab:IE} show the results we obtained by running the code in listing~\ref{lst:theta} with different input values. Figure~\ref{fig:bar} shows a graphical representation of the results. The smaller the steps we take the smaller is the error we observe.     
-      
+We proceeded to do a little more simulations where we took a little more space variables to look at the behaviour of the error in this direction. We choose to include two grid distances: $\Delta t = \frac{1}{10},\frac{1}{20}$. We then used 11 different grid spacings starting from $\frac{1}{40}$ and increasing by multiplying by 2. This was done for the crank-nicholson scheme and the implicit Euler. Results are shown in figure \ref{errorDX}.
+
+
+
+We expect the error the behave like the consistency error for the general $\theta$-scheme. This is given by
+
+\begin{eqnarray}
+T^{n+1/2}_j = \left[{  (\frac{1}{2} - \theta) \Delta t u_{xxt} - \frac{1}{12}(\Delta x)^2 u_{xxxx}  }\right] + \left[{ \frac{1}{24} (\Delta t)^2u_{ttt} - \frac{1}{8}(\Delta t)^2u_{xxtt} }\right]  \\ + \left[{  \frac{1}{12} (\frac{1}{2}-\theta)   \Delta t (\Delta x)^2 u_{xxxxt} - \frac{2}{6!}(\Delta x)^4u_{xxxxxx}  }\right]
+\label{Trunc}
+\end{eqnarray}
+
+
+So for the Crank Nicholson scheme where $\theta = 0$ we can easily find from \ref{Trunc} that $(T_j^{n+1/2})_{CN} = \mathcal{O}(\Delta(x)^2 + \Delta(t^2))$. Since we have held the time step constant in each experiment however, this means that as $\Delta x \rightarrow 0$ the error will bump into a constant term arising from the remaining finite time step size. We thus expect to see the quadratic behaviour as a constant slope in the part of the figure where $\Delta x$ is large enough in comparison to $\Delta t$ and more constant behaviour when $\Delta x$ is really small. In figure \ref{errorDX} we only see the constant slope, so we assume that the error arising from the time step size is still to small to notice.
+For the implicit Euler we expect to have the same order in terms of $\Delta x$ but there is a difference in the time step dependent term.  $(T_j^{n+1/2})_{IE} = \mathcal{O}(\Delta(x)^2 + \Delta(t))$. We will not notice this in the general behaviour in this plot, because only space step size is plotted, which should have the same slope and this is what we see. We also notice that the error is generally larger than the Crank Nicholson scheme which could be attributed to the poor time step size dependency. 
+\begin{figure}
+\includegraphics[scale = 0.45]{images/errorDX}
+\caption{Plots show the behaviour of the error with grid spacing for Implicit euler and Crank Nicholson}
+\label{errorDX}
+\end{figure}
+
+We have then repeated the experiment but instead let time step size vary. We used time steps starting from $\frac{1}{10}$ where every next one was half the size of the previous until we had 14 step sizes. We used these parameters for different grid sizes using again the Crank-Nicholson and the Implicit Euler. What do we expect to see? For Cranck Nicholson we had $(T_j^{n+1/2})_{CN} = \mathcal{O}(\Delta(x)^2 + \Delta(t^2))$. Which again means we expect to see a constant slope corresponding to the $(\Delta t)^2$ there where the time step sizes are large enough until we bump into the contant term arising from the constant grid size where grid spacing is so small its error is negatable in comparison. For Implicit Euler we have $(T_j^{n+1/2})_{IE} = \mathcal{O}(\Delta(x)^2 + \Delta(t))$. which is only first order in $\Delta t$ so we expect that this slope will be lower then the slope from crank nicholson. We can see all of this behaviour in figure \ref{errorDT}. 
 
 \begin{figure}
-\includegraphics[scale = 0.45]{images/q2CN.png}
-\includegraphics[scale = 0.45]{images/q2IE.png}
-\caption{Bar plots of the results shown in table~\ref{tab:CN} (left) and~\ref{tab:IE} (right).}
-\label{fig:bar}
+\includegraphics[scale = 0.45]{images/errorDT}
+\caption{Plots show the behaviour of the error with time step spacing for Implicit euler and Crank Nicholson}
+\label{errorDT}
 \end{figure}
+
+Note that it would also be interesting to include a similar plot using a constant $\mu$ instead of contant $\Delta t$ or $\Delta x$ for than we would not have to care about bumping in constant terms which would mean cleaner slopes. We could then more easily include explicit euler as we could just give it a sufficient $\mu$. But this has already been done and explained in the book corresponding to the course, so that would be uninteresting work.
+    
+      
+
+%\begin{figure}
+%\includegraphics[scale = 0.45]{images/q2CN.png}
+%\includegraphics[scale = 0.45]{images/q2IE.png}
+%\caption{Bar plots of the results shown in table~\ref{tab:CN} (left) and~\ref{tab:IE} (right).}
+%\label{fig:bar}
+%\end{figure}
 
 \chapter{Heat Equation with convection}
 In this part a convection term in introduced into the equation. We are now solving a different problem of the form:
 \begin{equation}
-\frac{\partial \phi}{\partial t} = 50\frac{\partial \phi}{\partial x} + \frac{\partial^2 \phi}{\partial x^2}
+\frac{\partial \phi}{\partial t} = a\frac{\partial \phi}{\partial x} + \frac{\partial^2 \phi}{\partial x^2}
 \end{equation}
-
+To solve this new problem we are forced to approximate the first derivative. We have three choices for these approximations central, forward and backward differences. The central difference approximates the derivative as:
+\begin{equation}
+a\frac{\partial \phi}{\partial x} \approx \frac{a_j^{n+1}}{2\triangle x}(U_{j+1}^{n+1} - U_{j-1}^{n+1})
+\end{equation}
+The forward difference approximation uses:
+\begin{equation}
+a\frac{\partial \phi}{\partial x} \approx \frac{a_j^{n+1}}{2\triangle x}(U_{j+1}^{n+1} - U_{j}^{n+1})
+\end{equation}
+And finally the backward difference approximation:
+\begin{equation}
+a\frac{\partial \phi}{\partial x} \approx \frac{a_j^{n+1}}{2\triangle x}(U_{j}^{n+1} - U_{j-1}^{n+1})
+\end{equation} 
+These approximations allow us to solve the problem. Results are shown in figure~\ref{fig:approx}.
 \begin{figure}
-\includegraphics[scale = 0.45]{images/centralDifference.png}
-\includegraphics[scale = 0.45]{images/backwardDifference.png}
-\includegraphics[scale = 0.45]{images/forwardDifference.png}
+\includegraphics[scale = 0.4]{images/convection.png}
+\caption{Solution of the problem with convection-term using different approximations for the first derivative term.}
+\label{fig:approx}
 \end{figure}
+To do the computations we used $\triangle t = 0.0001$ and $\triangle x = 0.1$ which leads to $\mu = 0.01$.
+
 
 
 \end{document}
